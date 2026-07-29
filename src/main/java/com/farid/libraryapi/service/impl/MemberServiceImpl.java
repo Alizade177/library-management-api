@@ -8,6 +8,7 @@ import com.farid.libraryapi.mapper.MemberMapper;
 import com.farid.libraryapi.repository.MemberRepository;
 import com.farid.libraryapi.service.MemberService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
+    @Transactional
     public MemberResponse createMember(MemberRequest request) {
 
         Member member = MemberMapper.toEntity(request);
@@ -31,6 +33,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MemberResponse> getAllMembers() {
 
         return memberRepository.findAll()
@@ -40,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MemberResponse getMemberById(Long id) {
        Member member = memberRepository.findById(id)
                .orElseThrow(() -> new ResourceNotFoundException("Member not found"));
@@ -48,6 +52,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public MemberResponse updateMember(Long id, MemberRequest request) {
 
         Member member = memberRepository.findById(id)
@@ -62,6 +67,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void deleteMember(Long id) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found"));

@@ -8,6 +8,7 @@ import com.farid.libraryapi.mapper.AuthorMapper;
 import com.farid.libraryapi.repository.AuthorRepository;
 import com.farid.libraryapi.service.AuthorService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,11 +16,13 @@ import java.util.List;
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorRepository authorRepository;
 
+
     public AuthorServiceImpl(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
     }
 
     @Override
+    @Transactional
     public AuthorResponse createAuthor(AuthorRequest request) {
 
         Author author = AuthorMapper.toEntity(request);
@@ -29,6 +32,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AuthorResponse> getAllAuthors() {
         return authorRepository.findAll()
                 .stream()
@@ -37,6 +41,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AuthorResponse getAuthorById(Long id) {
         Author author = authorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Author not found"));
@@ -45,6 +50,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public AuthorResponse updateAuthor(Long id, AuthorRequest request) {
         Author author = authorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found"));
@@ -58,6 +64,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public void deleteAuthor(Long id) {
         Author author = authorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Author not found"));
