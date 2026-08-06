@@ -64,4 +64,34 @@ public class BookController {
 
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<BookResponse>> searchBooks(
+
+            @RequestParam(required = false) String title,
+
+            @RequestParam(required = false) String author,
+
+            @RequestParam(required = false) String category,
+
+            @RequestParam(required = false) Double minPrice,
+
+            @RequestParam(required = false) Double maxPrice,
+
+            Pageable pageable) {
+
+        return ResponseEntity.ok(
+
+                bookService.searchBooks(
+                        title,
+                        author,
+                        category,
+                        minPrice,
+                        maxPrice,
+                        pageable
+                )
+
+        );
+    }
 }

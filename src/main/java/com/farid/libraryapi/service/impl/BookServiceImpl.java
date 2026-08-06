@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.farid.libraryapi.specification.BookSpecification;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Set;
@@ -44,7 +46,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookResponse createBook(BookRequest request) {
         Author author = authorRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("Author not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found"));
 
         Book book = BookMapper.toEntity(request);
 
@@ -53,7 +55,7 @@ public class BookServiceImpl implements BookService {
         if (request.getMemberId() != null) {
 
             Member member = memberRepository.findById(request.getMemberId())
-                    .orElseThrow(() -> new RuntimeException("Member not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Member not found"));
 
             book.setMember(member);
         }
@@ -89,7 +91,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public BookResponse getBookById(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
         return BookMapper.toResponse(book);
     }
@@ -98,10 +100,10 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookResponse updateBook(Long id, BookRequest request) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
         Author author = authorRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("Author not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Author not found"));
 
         book.setTitle(request.getTitle());
         book.setPrice(request.getPrice());
@@ -131,5 +133,26 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
 
         bookRepository.delete(book);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BookResponse> searchBooks(
+            String title,
+            String author,
+            String category,
+            Double minPrice,
+            Double maxPrice,
+            Pageable pageable) {
+
+        Specification<Book> specification =
+                Specification.where(BookSpecification.hasTitle(title))
+                        .and(BookSpecification.hasAuthor(author))
+                        .and(BookSpecification.hasCategory(category))
+                        .and(BookSpecification.minPrice(minPrice))
+                        .and(BookSpecification.maxPrice(maxPrice));
+
+        return bookRepository.findAll(specification, pageable)
+                .map(BookMapper::toResponse);
     }
 }

@@ -17,4 +17,13 @@ public interface BookService {
     BookResponse updateBook(Long id,BookRequest request);
 
     void deleteBook(Long id);
+
+    Page<BookResponse> searchBooks(
+            String title,
+            String author,
+            String category,
+            Double minPrice,
+            Double maxPrice,
+            Pageable pageable
+    );
 }
