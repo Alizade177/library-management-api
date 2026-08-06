@@ -9,19 +9,20 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
+    @Override
     @EntityGraph(attributePaths = {
             "member",
             "items",
             "items.book"
     })
-    List<Order> findAllWithEntityGraph();
+    List<Order> findAll();
 
     @Query("""
-        select distinct o
-        from Order o
-        join fetch o.member
-        join fetch o.items i
-        join fetch i.book
-        """)
+    select distinct o
+    from Order o
+    join fetch o.member
+    join fetch o.items i
+    join fetch i.book
+    """)
     List<Order> findAllWithItems();
 }

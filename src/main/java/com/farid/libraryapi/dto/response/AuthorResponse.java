@@ -12,4 +12,6 @@ public class AuthorResponse {
     private String name;
 
     private String email;
+
+    private String role;
 }

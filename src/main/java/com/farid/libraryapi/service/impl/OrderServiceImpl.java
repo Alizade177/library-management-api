@@ -105,4 +105,22 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
+    @Transactional
+    public void createOrderWithError(OrderRequest request){
+
+        Member member =
+                memberRepository.findById(request.getMemberId())
+                        .orElseThrow();
+
+        Order order=new Order();
+
+        order.setMember(member);
+
+        order.setOrderDate(LocalDateTime.now());
+
+        orderRepository.save(order);
+
+        throw new RuntimeException("Rollback test");
+    }
+
 }

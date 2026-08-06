@@ -15,4 +15,7 @@ public interface OrderService {
 
     void deleteOrder(Long id);
 
+    void createOrderWithError(OrderRequest request);
+
+
 }
