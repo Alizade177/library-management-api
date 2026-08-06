@@ -12,6 +12,11 @@ import java.security.Key;
 import java.time.Duration;
 import java.util.Date;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SecurityException;
+
 @Service
 public class JwtService {
 
@@ -34,6 +39,8 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("role", user.getRole().name())
+                .claim("userId", user.getId())
+                .claim("email", user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(
@@ -57,9 +64,28 @@ public class JwtService {
     public boolean isTokenValid(String token) {
 
         try {
+
             getClaims(token);
             return true;
-        } catch (Exception e) {
+
+        } catch (ExpiredJwtException ex) {
+
+            return false;
+
+        } catch (UnsupportedJwtException ex) {
+
+            return false;
+
+        } catch (MalformedJwtException ex) {
+
+            return false;
+
+        } catch (SecurityException ex) {
+
+            return false;
+
+        } catch (IllegalArgumentException ex) {
+
             return false;
         }
     }
