@@ -4,11 +4,13 @@ import com.farid.libraryapi.dto.request.BookRequest;
 import com.farid.libraryapi.dto.response.BookResponse;
 import com.farid.libraryapi.entity.Author;
 import com.farid.libraryapi.entity.Book;
+import com.farid.libraryapi.entity.Category;
 import com.farid.libraryapi.entity.Member;
 import com.farid.libraryapi.exception.ResourceNotFoundException;
 import com.farid.libraryapi.mapper.BookMapper;
 import com.farid.libraryapi.repository.AuthorRepository;
 import com.farid.libraryapi.repository.BookRepository;
+import com.farid.libraryapi.repository.CategoryRepository;
 import com.farid.libraryapi.repository.MemberRepository;
 import com.farid.libraryapi.service.BookService;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -24,14 +28,16 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final MemberRepository memberRepository;
+    private final CategoryRepository categoryRepository;
 
     public BookServiceImpl(BookRepository bookRepository,
                            AuthorRepository authorRepository,
-                           MemberRepository memberRepository) {
+                           MemberRepository memberRepository, CategoryRepository categoryRepository) {
 
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.memberRepository = memberRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -51,6 +57,21 @@ public class BookServiceImpl implements BookService {
 
             book.setMember(member);
         }
+
+        Set<Category> categories =
+                request.getCategoryIds()
+                        .stream()
+                        .map(id ->
+                                categoryRepository.findById(id)
+                                        .orElseThrow(() ->
+                                                new ResourceNotFoundException(
+                                                        "Category not found: " + id
+                                                )
+                                        )
+                        )
+                        .collect(Collectors.toSet());
+
+        book.setCategories(categories);
 
         Book savedBook = bookRepository.save(book);
 

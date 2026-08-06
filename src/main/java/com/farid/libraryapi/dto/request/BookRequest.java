@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 public class BookRequest {
@@ -21,5 +23,7 @@ public class BookRequest {
     private Long authorId;
 
     private Long memberId;
+
+    private Set<Long> categoryIds;
 
 }
