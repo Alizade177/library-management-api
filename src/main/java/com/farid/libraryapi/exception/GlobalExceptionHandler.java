@@ -6,6 +6,8 @@ import com.farid.libraryapi.dto.response.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.farid.libraryapi.exception.InvalidCredentialsException;
+import com.farid.libraryapi.exception.UserAlreadyExistsException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -55,4 +57,36 @@ public class GlobalExceptionHandler {
 
 
     }
+
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(
+            UserAlreadyExistsException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(error);
+    }
+
+
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(
+            InvalidCredentialsException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(error);
+    }
+
 }

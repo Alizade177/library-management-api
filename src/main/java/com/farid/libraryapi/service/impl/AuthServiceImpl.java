@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.farid.libraryapi.dto.request.LoginRequest;
 import com.farid.libraryapi.security.JwtService;
 
+import com.farid.libraryapi.exception.InvalidCredentialsException;
+import com.farid.libraryapi.exception.UserAlreadyExistsException;
+
 @Service
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
@@ -34,11 +37,11 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new UserAlreadyExistsException("Username already exists");
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new UserAlreadyExistsException("Email already exists");
         }
 
         User user = new User();
@@ -72,13 +75,13 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() ->
-                        new RuntimeException("Invalid username or password"));
+                        new InvalidCredentialsException("Invalid username or password"));
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword())) {
 
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         String token = jwtService.generateToken(user);
