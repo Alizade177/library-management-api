@@ -3,7 +3,6 @@ package com.farid.libraryapi.security;
 import com.farid.libraryapi.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -47,8 +46,12 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-
         return getClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return getClaims(token)
+                .get("role", String.class);
     }
 
     public boolean isTokenValid(String token) {
@@ -56,7 +59,6 @@ public class JwtService {
         try {
             getClaims(token);
             return true;
-
         } catch (Exception e) {
             return false;
         }

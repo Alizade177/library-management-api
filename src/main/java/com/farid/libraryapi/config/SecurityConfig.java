@@ -1,6 +1,5 @@
 package com.farid.libraryapi.config;
 
-import com.farid.libraryapi.repository.UserRepository;
 import com.farid.libraryapi.security.CustomAccessDeniedHandler;
 import com.farid.libraryapi.security.CustomAuthenticationEntryPoint;
 import com.farid.libraryapi.security.JwtFilter;
@@ -20,14 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    public JwtFilter jwtFilter(
-            JwtService jwtService,
-            UserRepository userRepository) {
-
-        return new JwtFilter(
-                jwtService,
-                userRepository
-        );
+    public JwtFilter jwtFilter(JwtService jwtService) {
+        return new JwtFilter(jwtService);
     }
 
     @Bean
@@ -48,12 +41,8 @@ public class SecurityConfig {
                 )
 
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(
-                                authenticationEntryPoint
-                        )
-                        .accessDeniedHandler(
-                                accessDeniedHandler
-                        )
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
 
                 .authorizeHttpRequests(auth -> auth
