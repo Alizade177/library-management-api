@@ -1,6 +1,7 @@
 package com.farid.libraryapi.service.impl;
 
 import com.farid.libraryapi.dto.request.BookRequest;
+import com.farid.libraryapi.dto.request.BookSearchRequest;
 import com.farid.libraryapi.dto.response.BookResponse;
 import com.farid.libraryapi.entity.Author;
 import com.farid.libraryapi.entity.Book;
@@ -155,4 +156,58 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findAll(specification, pageable)
                 .map(BookMapper::toResponse);
     }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BookResponse> searchBooks(
+            BookSearchRequest request,
+            Pageable pageable) {
+
+        Specification<Book> specification =
+                (root, query, cb) -> null;
+
+        if (request.getTitle() != null &&
+                !request.getTitle().isBlank()) {
+
+            specification = specification.and(
+                    BookSpecification.hasTitle(request.getTitle())
+            );
+        }
+
+        if (request.getAuthor() != null &&
+                !request.getAuthor().isBlank()) {
+
+            specification = specification.and(
+                    BookSpecification.hasAuthor(request.getAuthor())
+            );
+        }
+
+        if (request.getCategory() != null &&
+                !request.getCategory().isBlank()) {
+
+            specification = specification.and(
+                    BookSpecification.hasCategory(request.getCategory())
+            );
+        }
+
+        if (request.getMinPrice() != null) {
+
+            specification = specification.and(
+                    BookSpecification.minPrice(request.getMinPrice())
+            );
+        }
+
+        if (request.getMaxPrice() != null) {
+
+            specification = specification.and(
+                    BookSpecification.maxPrice(request.getMaxPrice())
+            );
+        }
+
+        return bookRepository.findAll(specification, pageable)
+                .map(BookMapper::toResponse);
+    }
+
+
 }

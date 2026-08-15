@@ -4,6 +4,7 @@ import com.farid.libraryapi.dto.request.BookRequest;
 import com.farid.libraryapi.dto.response.BookResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.farid.libraryapi.dto.request.BookSearchRequest;
 
 import java.util.List;
 
@@ -24,6 +25,13 @@ public interface BookService {
             String category,
             Double minPrice,
             Double maxPrice,
+            Pageable pageable
+    );
+
+    //List<BookResponse> searchBooks(BookSearchRequest request);
+
+    Page<BookResponse> searchBooks(
+            BookSearchRequest request,
             Pageable pageable
     );
 }

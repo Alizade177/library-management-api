@@ -2,6 +2,7 @@ package com.farid.libraryapi.controller;
 
 
 import com.farid.libraryapi.dto.request.BookRequest;
+import com.farid.libraryapi.dto.request.BookSearchRequest;
 import com.farid.libraryapi.dto.response.BookResponse;
 import com.farid.libraryapi.service.BookService;
 import jakarta.validation.Valid;
@@ -66,32 +67,40 @@ public class BookController {
     }
 
 
+//    @GetMapping("/search")
+//    public ResponseEntity<Page<BookResponse>> searchBooks(
+//
+//            @RequestParam(required = false) String title,
+//
+//            @RequestParam(required = false) String author,
+//
+//            @RequestParam(required = false) String category,
+//
+//            @RequestParam(required = false) Double minPrice,
+//
+//            @RequestParam(required = false) Double maxPrice,
+//
+//            Pageable pageable) {
+//
+//        return ResponseEntity.ok(
+//
+//                bookService.searchBooks(
+//                        title,
+//                        author,
+//                        category,
+//                        minPrice,
+//                        maxPrice,
+//                        pageable
+//                )
+//
+//        );
+//    }
+
     @GetMapping("/search")
-    public ResponseEntity<Page<BookResponse>> searchBooks(
-
-            @RequestParam(required = false) String title,
-
-            @RequestParam(required = false) String author,
-
-            @RequestParam(required = false) String category,
-
-            @RequestParam(required = false) Double minPrice,
-
-            @RequestParam(required = false) Double maxPrice,
-
+    public Page<BookResponse> searchBooks(
+            @ModelAttribute BookSearchRequest request,
             Pageable pageable) {
 
-        return ResponseEntity.ok(
-
-                bookService.searchBooks(
-                        title,
-                        author,
-                        category,
-                        minPrice,
-                        maxPrice,
-                        pageable
-                )
-
-        );
+        return bookService.searchBooks(request, pageable);
     }
 }

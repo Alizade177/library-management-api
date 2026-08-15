@@ -49,29 +49,24 @@ public class BookSpecification {
 
     }
 
-    public static Specification<Book> hasCategory(String category){
+    public static Specification<Book> hasCategory(String category) {
 
-        return (root, query, cb)->{
+        return (root, query, cb) -> {
 
-            if(category == null){
-
+            if (category == null || category.isBlank()) {
                 return null;
-
             }
 
-            Join<Object,Object> join =
+            query.distinct(true);
+
+            Join<Object, Object> join =
                     root.join("categories");
 
             return cb.like(
-
                     cb.lower(join.get("name")),
-
                     "%" + category.toLowerCase() + "%"
-
             );
-
         };
-
     }
 
     public static Specification<Book> minPrice(Double minPrice){
