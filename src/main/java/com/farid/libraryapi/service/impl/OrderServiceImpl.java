@@ -77,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
 
-        return orderRepository.findAll()
+        return orderRepository.findAllWithEntityGraph()
                 .stream()
                 .map(OrderMapper::toResponse)
                 .toList();
@@ -87,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(Long id) {
 
-        Order order = orderRepository.findById(id)
+        Order order = orderRepository.findByIdWithEntityGraph(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Order not found"));
 
@@ -105,17 +105,17 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
+    @Override
     @Transactional
-    public void createOrderWithError(OrderRequest request){
+    public void createOrderWithError(OrderRequest request) {
 
-        Member member =
-                memberRepository.findById(request.getMemberId())
-                        .orElseThrow();
+        Member member = memberRepository.findById(request.getMemberId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Member not found"));
 
-        Order order=new Order();
+        Order order = new Order();
 
         order.setMember(member);
-
         order.setOrderDate(LocalDateTime.now());
 
         orderRepository.save(order);
