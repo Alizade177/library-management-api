@@ -9,14 +9,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@Transactional
+@ActiveProfiles("test")
 class OrderServiceTest {
+
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     private OrderRepository orderRepository;
@@ -25,13 +29,12 @@ class OrderServiceTest {
     private MemberRepository memberRepository;
 
     private Long memberId;
-    @Autowired
-    private OrderServiceImpl orderServiceImpl;
 
     @BeforeEach
     void setUp() {
 
         Member member = new Member();
+
         member.setFullName("Test Member");
         member.setPhone("0555555555");
 
@@ -43,14 +46,21 @@ class OrderServiceTest {
     @Test
     void rollbackShouldWork() {
 
+        long beforeCount = orderRepository.count();
+
         OrderRequest request = new OrderRequest();
         request.setMemberId(memberId);
 
         assertThrows(
                 RuntimeException.class,
-                () -> orderServiceImpl.createOrderWithError(request)
+                () -> orderService.createOrderWithError(request)
         );
 
-        assertEquals(0, orderRepository.count());
+        long afterCount = orderRepository.count();
+
+        assertEquals(
+                beforeCount,
+                afterCount
+        );
     }
 }
