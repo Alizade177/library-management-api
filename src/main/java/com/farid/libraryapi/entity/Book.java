@@ -33,7 +33,7 @@ public class Book {
     @JoinColumn(name="member_id")
     private Member member;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_categories",
             joinColumns = @JoinColumn(name = "book_id"),
@@ -41,6 +41,9 @@ public class Book {
     )
     private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(
+            mappedBy = "book",
+            fetch = FetchType.LAZY
+    )
     private List<OrderItem> orderItems = new ArrayList<>();
 }
