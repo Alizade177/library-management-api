@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.farid.libraryapi.specification.BookSpecification;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 import java.util.Set;
@@ -90,21 +92,28 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "books", key = "#id")
     public BookResponse getBookById(Long id) {
+
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Book not found"));
 
         return BookMapper.toResponse(book);
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "books", key = "#id")
     public BookResponse updateBook(Long id, BookRequest request) {
+
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Book not found"));
 
         Author author = authorRepository.findById(request.getAuthorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Author not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Author not found"));
 
         book.setTitle(request.getTitle());
         book.setPrice(request.getPrice());
@@ -113,13 +122,13 @@ public class BookServiceImpl implements BookService {
         if (request.getMemberId() != null) {
 
             Member member = memberRepository.findById(request.getMemberId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Member not found"));
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException("Member not found"));
 
             book.setMember(member);
+
         } else {
-
             book.setMember(null);
-
         }
 
         Book updatedBook = bookRepository.save(book);
@@ -129,9 +138,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "books", key = "#id")
     public void deleteBook(Long id) {
+
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Book not found"));
 
         bookRepository.delete(book);
     }

@@ -10,6 +10,12 @@ spring.jpa.properties.hibernate.format_sql=true
 
 jwt.secret=${JWT_SECRET}
 jwt.expiration=1h
+file.upload-dir=uploads
+file.max-size=5242880
 
+file.expiration-days=7
+file.cleanup.interval=86400000
 
-
+async.notification.core-pool-size=2
+async.notification.max-pool-size=5
+async.notification.queue-capacity=100
