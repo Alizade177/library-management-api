@@ -1,4 +1,9 @@
 package com.farid.libraryapi.service;
 
-public class NotificationService {
+public interface NotificationService {
+
+    void sendOrderNotification(
+            String email,
+            Long orderId
+    );
 }
