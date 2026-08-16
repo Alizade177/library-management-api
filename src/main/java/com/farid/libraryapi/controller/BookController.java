@@ -5,6 +5,9 @@ import com.farid.libraryapi.dto.request.BookRequest;
 import com.farid.libraryapi.dto.request.BookSearchRequest;
 import com.farid.libraryapi.dto.response.BookResponse;
 import com.farid.libraryapi.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -96,11 +99,27 @@ public class BookController {
 //        );
 //    }
 
+    @Operation(
+            summary = "Search and filter books",
+            description = """
+                Dynamically searches books by title, author,
+                category and price range.
+                All parameters are optional.
+                """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Books found successfully"
+            )
+    })
     @GetMapping("/search")
-    public Page<BookResponse> searchBooks(
-            @ModelAttribute BookSearchRequest request,
+    public ResponseEntity<Page<BookResponse>> searchBooks(
+            BookSearchRequest request,
             Pageable pageable) {
 
-        return bookService.searchBooks(request, pageable);
+        return ResponseEntity.ok(
+                bookService.searchBooks(request, pageable)
+        );
     }
 }
